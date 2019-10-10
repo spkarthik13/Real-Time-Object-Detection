@@ -1,0 +1,4 @@
+buckets:
+  training: rt-image-detection
+  output: rt-image-detection
+name: rt-image-detection

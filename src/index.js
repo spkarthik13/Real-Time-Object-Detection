@@ -140,13 +140,13 @@ class App extends React.Component {
               resolve()
             }
           })
-        })
+        });
 
-      const modelPromise = tf.loadGraphModel(MODEL_JSON)
-      const labelsPromise = fetch(LABELS_URL).then(data => data.json())
+      const modelPromise = tf.loadGraphModel(MODEL_JSON);
+      const labelsPromise = fetch(LABELS_URL).then(data => data.json());
       Promise.all([modelPromise, labelsPromise, webCamPromise])
         .then(values => {
-          const [model, labels] = values
+          const [model, labels] = values;
           this.detectFrame(this.videoRef.current, model, labels)
         })
         .catch(error => {
@@ -159,18 +159,18 @@ class App extends React.Component {
     TFWrapper(model)
       .detect(video)
       .then(predictions => {
-        this.renderPredictions(predictions, labels)
+        this.renderPredictions(predictions, labels);
         requestAnimationFrame(() => {
           this.detectFrame(video, model, labels)
         })
       })
-  }
+  };
 
   renderPredictions = (predictions, labels) => {
     const ctx = this.canvasRef.current.getContext('2d')
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     // Font options.
-    const font = '16px sans-serif'
+    const font = '16px Comic Sans MS'
     ctx.font = font
     ctx.textBaseline = 'top'
     predictions.forEach(prediction => {
@@ -178,13 +178,13 @@ class App extends React.Component {
       const y = prediction.bbox[1]
       const width = prediction.bbox[2]
       const height = prediction.bbox[3]
-      const label = labels[parseInt(prediction.class)]
+      const label = labels[parseInt(prediction.class)] + prediction.score;
       // Draw the bounding box.
-      ctx.strokeStyle = '#00FFFF'
+      ctx.strokeStyle = '#67B5FD'
       ctx.lineWidth = 4
       ctx.strokeRect(x, y, width, height)
       // Draw the label background.
-      ctx.fillStyle = '#00FFFF'
+      ctx.fillStyle = '#67B5FD'
       const textWidth = ctx.measureText(label).width
       const textHeight = parseInt(font, 10) // base 10
       ctx.fillRect(x, y, textWidth + 4, textHeight + 4)
@@ -192,11 +192,12 @@ class App extends React.Component {
 
     predictions.forEach(prediction => {
       const x = prediction.bbox[0]
-      const y = prediction.bbox[1]
-      const label = labels[parseInt(prediction.class)]
+      const y = prediction.bbox[1];
+      const label = labels[parseInt(prediction.class)]+ " " + prediction.score;
       // Draw the text last to ensure it's on top.
       ctx.fillStyle = '#000000'
-      ctx.fillText(label, x, y)
+      ctx.fillText(label, x, y);
+      // ctx.fillText(score, sx, sy);
     })
   }
 
@@ -209,14 +210,14 @@ class App extends React.Component {
           playsInline
           muted
           ref={this.videoRef}
-          width="600"
-          height="500"
+          width="1024"
+          height="768"
         />
         <canvas
           className="size"
           ref={this.canvasRef}
-          width="600"
-          height="500"
+          width="1024"
+          height="768"
         />
       </div>
     )
